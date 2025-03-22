@@ -39,7 +39,7 @@ php artisan serve
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone <repo_url>
+git clone https://github.com/minrandom/mini-ecommerce-api.git
 cd mini-ecommerce-api
 composer install
 ```
