@@ -11,8 +11,12 @@ class CartController extends Controller
 {
     public function index()
     {
-        $cart = CartItem::with('product')->get();
-        return response()->json($cart);
+        $cartItems = CartItem::with('product')
+        ->where('user_id', auth()->id())
+        ->where('status', 'in_cart')
+        ->get();
+
+        return response()->json($cartItems);
     }
 
     public function add(Request $request)
@@ -22,15 +26,21 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
     
-        $cartItem = CartItem::where('product_id', $request->product_id)->first();
-    
+        var_dump(auth()->id());
+
+        $cartItem = CartItem::where('user_id', auth()->id())
+            ->where('product_id', $request->product_id)
+            ->first();
+
         if ($cartItem) {
-            // Update quantity instead of creating new
             $cartItem->quantity += $request->quantity;
             $cartItem->save();
         } else {
-            // Create new cart item
-            CartItem::create($request->all());
+            CartItem::create([
+                'user_id' => auth()->id(),
+                'product_id' => $request->product_id,
+                'quantity' => $request->quantity
+            ]);
         }
     
         return response()->json(['message' => 'Cart updated successfully!'], 200);
@@ -41,4 +51,37 @@ class CartController extends Controller
         CartItem::destroy($id);
         return response()->json(null, 204);
     }
+
+    public function checkout()
+    {
+        $cartItems = CartItem::where('user_id', auth()->id())
+            ->where('status', 'in_cart')
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return response()->json(['message' => 'Your cart is empty'], 400);
+        }
+
+        foreach ($cartItems as $item) {
+            $item->status = 'checked_out';
+            $item->checkout_date = now();
+            $item->save();
+        }
+
+        return response()->json(['message' => 'Checkout successful!']);
+    }
+
+    public function history()
+    {
+        $history = CartItem::with('product')
+            ->where('user_id', auth()->id())
+            ->where('status', 'checked_out')
+            ->orderBy('checkout_date', 'desc')
+            ->get();
+
+        return response()->json($history);
+    }
+
+
+
 }

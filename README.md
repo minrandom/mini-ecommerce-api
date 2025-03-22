@@ -1,33 +1,35 @@
-
 # 🛠️ Mini E-Commerce Backend API (Laravel 9.x)
 
-This is the backend REST API built with **Laravel 9** to support a mini e-commerce app. It handles **products**, **cart operations**, and connects to a MySQL database.
+This is the backend REST API built with **Laravel 9** to support a mini e-commerce app. It includes **products**, **cart system**, **checkout history**, and uses JWT Authentication.
+
+---
 
 ## 🟢 Features:
+- JWT Auth (Register, Login)
 - Product CRUD (name, description, price, image URL)
-- Cart System: Add, View, Remove
-- **Quantity merge logic** (when same product is added again)
-- API ready for frontend integration via **Flutter + Dio**
+- Cart System: Add, View, Remove, Checkout
+- **Quantity merge logic** (merge if product exists in cart)
+- Checkout history tracking (see past checkouts)
+- Secure APIs using **JWT token**
+- Ready for **Flutter + Dio** frontend integration 🚀
+
+---
 
 ## 🔧 Technologies Used:
 - Laravel 9.x
 - MySQL
 - PHP 8+
-- Artisan CLI 
+- Tymon JWT Auth
+- Artisan CLI
 
+---
 
-## ⚙️ Setup Instructions:
+## ⚙️ Setup Instructions
 
-## 🗂️ If you downloaded the ZIP file manually:
-
+### 🗂️ If you downloaded the ZIP file manually:
 1. Unzip the project folder.
 2. Open terminal inside the project directory.
-3. Run the following:
-
-
-## OR you Can Clone the project
-git clone
-
+3. Run:
 ```bash
 composer install
 cp .env.example .env
@@ -36,22 +38,18 @@ php artisan migrate
 php artisan serve
 ```
 
+---
 
-### 1. Clone & Install Dependencies
+### OR Clone via Git:
 ```bash
 git clone https://github.com/minrandom/mini-ecommerce-api.git
 cd mini-ecommerce-api
 composer install
-```
-
-### 2. Configure Environment
-```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-### 3. Setup Database
-Edit `.env`:
+### Setup `.env`:
 ```env
 DB_DATABASE=mini_ecommerce
 DB_USERNAME=root
@@ -63,16 +61,25 @@ Run migrations:
 php artisan migrate
 ```
 
-### (Optional) Seed Dummy Data
+(Optional) Seed Dummy Data:
 ```bash
-php artisan db:seed
+mysql -u root -p your_db < products_toys_seed.sql
+mysql -u root -p your_db < users_seed.sql
 ```
 
-### 4. Serve API
+Start API server:
 ```bash
 php artisan serve
 ```
 
+---
+
+## 🔐 JWT Auth:
+- **Register**: `/api/register`
+- **Login**: `/api/login`
+- All `/cart` & `/cart/history` routes require **Authorization: Bearer <token>**
+
+---
 
 ## 📌 API Endpoints
 
@@ -85,20 +92,27 @@ php artisan serve
 | PUT    | /api/products/{id}     | Update product     |
 | DELETE | /api/products/{id}     | Delete product     |
 
+---
+
 ### 🛒 Cart:
 | Method | Endpoint                | Description                         |
 |--------|--------------------------|-------------------------------------|
 | POST   | /api/cart/add            | Add to cart (auto merge quantity)   |
-| GET    | /api/cart                | View all cart items                 |
+| GET    | /api/cart                | View all cart items (in cart)       |
 | DELETE | /api/cart/remove/{id}    | Remove cart item by ID              |
+| POST   | /api/cart/checkout       | Checkout & move items to history    |
 
+---
 
+### 📜 Checkout History:
+| Method | Endpoint                | Description                   |
+|--------|--------------------------|-------------------------------|
+| GET    | /api/cart/history        | View past checkout history    |
 
-## 🚀 Next Steps:
-- Add JWT Authentication (Laravel tymon/jwt-auth)
-- Secure cart routes with middleware
+---
+
+## 🚀 Next Recommended Steps:
+- CI/CD with GitHub Actions
 - Dockerize API for deployment
-
-
-
+- Setup Swagger docs for API reference
 
